@@ -26,7 +26,7 @@ let GameState = {
     },
     create: function() {
         this.background= this.game.add.sprite(0,0 ,'background')
-        this.background.inputEnable= true
+        this.background.inputEnabled = true
         this.background.events.onInputDown.add(this.placeItem,this)
 
         this.pet= this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'pet')
@@ -93,8 +93,46 @@ let GameState = {
         this.funText.anchor.setTo(0,1)
 
         this.refreshStats()
-      
+
+        if(this.pet.customParams.health > 0 || this.pet.customParams.fun > 0){
+            this.statsDecreaser = this.game.time.events.loop(Phaser.Timer.SECOND*10 , this.reduceProperties, this)
+        }
+
+        this.gameover = this.game.add.sprite(0,0,'gameover')
+        this.gameover.alpha = 0
+        let gameOverStyle = {
+            font: 'bold 35px Arial',
+            fill: '#fff'
+        }
+        this.gameOverText = this.game.add.text(this.game.world.centerX,this.game.world.centerY/1.5,'GAME OVER',gameOverStyle)
+        this.gameOverText.alpha = 0
+        this.gameOverText.anchor.setTo(0.5,0.5)
+
+        this.restartText = this.game.add.text(this.game.world.centerX,this.game.world.centerY,'TAP TO RESTART',gameOverStyle)
+        this.restartText.alpha = 0
+        this.restartText.anchor.setTo(0.5,0.5)
+
     },
+
+    update: function(){
+        if(this.pet.customParams.health <= 0 || this.pet.customParams.fun <= 0 ){
+            this.pet.customParams.health = 0
+            this.pet.customParams.fun = 0
+            this.refreshStats()
+            this.pet.frame = 4
+            this.uiBlocked = true
+            this.pet.inputEnabled = false
+            this.gameover.alpha = 0.9
+            this.gameOverText = 1
+            this.restartText = 1
+            this.restartText.inputEnabled = true
+            this.restartText.events.onInputDown.add(this.restartGame,this)
+        }
+    },
+    restartGame: function(){
+        this.game.state.restart()
+    },
+
     refreshStats:function(){
         this.healthText.text = this.pet.customParams.health 
         this.funText.text = this.pet.customParams.fun 
@@ -120,7 +158,7 @@ let GameState = {
             let y = event.position.y
 
             let newItem =  this.game.add.sprite(x,y,this.selectedItem.key)
-            newItem = this.anchor.setTo(0.5)
+            newItem.anchor.setTo(0.5)
             newItem.customParams = this.selectedItem.customParams
             
             this.uiBlocked = true
@@ -141,8 +179,9 @@ let GameState = {
             }
             this.refreshStats;
         }, this);
-        }
         petMovement.start();
+        }
+        
 
     
         
@@ -166,6 +205,11 @@ let GameState = {
 
             
         }
+    },
+    reduceProperties: function(){
+        this.pet.customParams.health -= 15
+        this.pet.customParams.fun -= 20
+        this.refreshStats()
     }
 
 
