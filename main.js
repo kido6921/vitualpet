@@ -76,7 +76,7 @@ let GameState = {
         this.selectedItem = null
         this.uiBlocked = false
 
-        let style = {font : 'bold 25px Arial', fill: '#fff'}
+        let style = {font : 'bold 25px Comic Sans MS', fill: '#050400'}
 
         this.healthImage = this.game.add.sprite(this.game.width/10,this.game.height/15,'health')
         this.healthImage.scale.setTo(0.6,0.6)
@@ -101,8 +101,8 @@ let GameState = {
         this.gameover = this.game.add.sprite(0,0,'gameover')
         this.gameover.alpha = 0
         let gameOverStyle = {
-            font: 'bold 35px Arial',
-            fill: '#fff'
+            font: 'bold 67px Teko',
+            fill: '#919090'
         }
         this.gameOverText = this.game.add.text(this.game.world.centerX,this.game.world.centerY/1.5,'GAME OVER',gameOverStyle)
         this.gameOverText.alpha = 0
@@ -123,10 +123,11 @@ let GameState = {
             this.uiBlocked = true
             this.pet.inputEnabled = false
             this.gameover.alpha = 0.9
-            this.gameOverText = 1
-            this.restartText = 1
+            this.gameOverText.alpha = 1
+            this.restartText.alpha = 1
             this.restartText.inputEnabled = true
             this.restartText.events.onInputDown.add(this.restartGame,this)
+            
         }
     },
     restartGame: function(){
@@ -177,7 +178,7 @@ let GameState = {
                     this.pet.customParams[stat] += newItem.customParams[stat]
                 }
             }
-            this.refreshStats;
+            this.refreshStats();
         }, this);
         petMovement.start();
         }
